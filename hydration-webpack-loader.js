@@ -20,7 +20,7 @@ const schema = {
 	additionalProperties: false
 };
 
-module.exports = function hydrationLoader(source) {
+module.exports = function(source) {
 	const options = Object.assign({
 		files: './src/components/**/*.vue',
 		getScriptPath: (file) => {

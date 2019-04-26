@@ -49,7 +49,6 @@ async function hydrateElement(element) {
 		element.setAttribute('data-server-rendered', 'true');
 
 		hydratedComponents.push(new Vue({
-			store,
 			el: element,
 			propsData,
 			render: createElement => createElement(Component),

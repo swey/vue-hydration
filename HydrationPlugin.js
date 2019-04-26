@@ -26,6 +26,8 @@ module.exports = {
 
 					// Only add the context data if it's a full hydration (for vue). Don't add it for vanilla js hydration
 					if (this.$options.hydration === true || this.$options.hydration === 'vue') {
+						this.$options.propsData = this.$options.propsData || {};
+
 						const {
 							global, _target, _env, _config, ...propsDataWithoutGlobal
 						} = this.$options.propsData;
