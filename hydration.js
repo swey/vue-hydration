@@ -48,10 +48,9 @@ async function hydrateElement(element) {
 		// Tell Vue that this is a hydration (Needed for partial hydrations, because Vue SSR renders this attribute only to the outer tag)
 		element.setAttribute('data-server-rendered', 'true');
 
-		hydratedComponents.push(new Vue({
+		hydratedComponents.push(new Component({
 			el: element,
 			propsData,
-			render: createElement => createElement(Component),
 		}));
 	}
 }

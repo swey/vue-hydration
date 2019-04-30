@@ -71,8 +71,8 @@ module.exports = function(source) {
 		return `'${file.componentId}': async () => ({
 			type: ${file.hydrationType},
 			Component: (await import('${scriptPath}')).default
-		}),`;
-	});
+		})`;
+	}).join(',');
 
 	// Log time
 	console.timeEnd('hydration-loader');
