@@ -23,10 +23,10 @@ const schema = {
 module.exports = function(source) {
 	const options = Object.assign({
 		files: './src/components/**/*.vue',
-		getScriptPath: (file) => {
-			let scriptPath = path.resolve(file.path);
+		getScriptPath: (component) => {
+			let scriptPath = path.resolve(component.path);
 
-			if (file.hydration === 'vanilla') {
+			if (component.hydrationType === 'vanilla') {
 				scriptPath = scriptPath.replace(path.extname(scriptPath), '.client.js');
 			}
 
@@ -38,7 +38,7 @@ module.exports = function(source) {
 
 	console.time('hydration-loader');
 
-	const files = glob.sync(options.files).map((filePath) => {
+	const components = glob.sync(options.files).map((filePath) => {
 		const content = fs.readFileSync(filePath, 'utf8');
 
 		// Get the set hydration type
@@ -62,14 +62,14 @@ module.exports = function(source) {
 			hydrationType,
 			componentId
 		};
-	}).filter(file => file.hydrationType && file.componentId);
+	}).filter(component => component.hydrationType && component.componentId);
 
 	// Create list of file imports
-	const imports = files.map((file) => {
-		const scriptPath = options.getScriptPath(file);
+	const imports = components.map((component) => {
+		const scriptPath = options.getScriptPath(component);
 
-		return `'${file.componentId}': async () => ({
-			type: ${file.hydrationType},
+		return `'${component.componentId}': async () => ({
+			type: ${typeof component.hydrationType === true ? true : `'${component.hydrationType}'`},
 			Component: (await import('${scriptPath}')).default
 		})`;
 	}).join(',');
