@@ -44,7 +44,7 @@ async function hydrateElement(element) {
 		let propsData = JSON.parse(element.getAttribute('data-context'));
 
 		// Additionally add global from object rendered in page body
-		propsData = { ...globalData, ...propsData }.
+		propsData = { ...globalData, ...propsData };
 
 		// Tell Vue that this is a hydration (Needed for partial hydrations, because Vue SSR renders this attribute only to the outer tag)
 		element.setAttribute('data-server-rendered', 'true');
