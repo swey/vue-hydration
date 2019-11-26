@@ -1,6 +1,6 @@
 {
   "name": "@swey/vue-hydration",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Hydration system for server side rendered vue components",
   "types": "./@types/vue-component.d.ts",
   "repository": {

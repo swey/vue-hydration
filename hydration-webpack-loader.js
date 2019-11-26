@@ -28,6 +28,13 @@ module.exports = function(source) {
 
 			if (component.hydrationType === 'vanilla') {
 				scriptPath = scriptPath.replace(path.extname(scriptPath), '.client.js');
+
+				// Please note: We check if a .client.js file exists and switch to .ts otherwise
+				// While this loader supports defining this function on a project base, we use this check
+				// even this operation takes some extra time because it reduces the complexity within the projects
+				if (!fs.existsSync(scriptPath)) {
+					scriptPath = scriptPath.replace('.js', '.ts');
+				}
 			}
 
 			return scriptPath;
