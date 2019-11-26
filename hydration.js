@@ -10,6 +10,7 @@
 const hydratedComponents = [];
 let Vue;
 let vueInitializationPromise;
+let globalData = {};
 
 async function initVue() {
 	Vue = (await import('vue/dist/vue.esm.js')).default;
@@ -40,10 +41,10 @@ async function hydrateElement(element) {
 	} else {
 		vueInitializationPromise = await (vueInitializationPromise || initVue());
 
-		const propsData = JSON.parse(element.getAttribute('data-context'));
+		let propsData = JSON.parse(element.getAttribute('data-context'));
 
 		// Additionally add global from object rendered in page body
-		propsData.global = window.JBMSales ? window.JBMSales.global : {};
+		propsData = { ...globalData, ...propsData }.
 
 		// Tell Vue that this is a hydration (Needed for partial hydrations, because Vue SSR renders this attribute only to the outer tag)
 		element.setAttribute('data-server-rendered', 'true');
@@ -55,7 +56,7 @@ async function hydrateElement(element) {
 	}
 }
 
-async function init() {
+export async function hydrate() {
 	const hydrationElements = document.querySelectorAll('[data-init]');
 
 	if (!hydrationElements.length) {
@@ -66,5 +67,12 @@ async function init() {
 	Array.from(hydrationElements).forEach(async element => hydrateElement(element));
 }
 
-init();
-document.addEventListener('DOMContentLoaded', () => init());
+export function setGlobalHydrationData(_globalData) {
+	globalData = _globalData;
+}
+
+export default function initHydration(globalData = {}) {
+	setGlobalHydrationData(globalData);
+	hydrate();
+	document.addEventListener('DOMContentLoaded', () => hydrate());
+}
