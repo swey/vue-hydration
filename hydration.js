@@ -36,7 +36,7 @@ async function hydrateElement(element) {
 	}
 
 	// Init components
-	if (!(hydrationConfig.type === true || hydrationConfig.hydration === 'vue')) {
+	if (!(hydrationConfig.type === true || hydrationConfig.type === 'vue')) {
 		hydratedComponents.push(new Component(element));
 	} else {
 		vueInitializationPromise = await (vueInitializationPromise || initVue());

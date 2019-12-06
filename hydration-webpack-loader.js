@@ -76,7 +76,7 @@ module.exports = function(source) {
 		const scriptPath = options.getScriptPath(component);
 
 		return `'${component.componentId}': async () => ({
-			type: ${typeof component.hydrationType === true ? true : `'${component.hydrationType}'`},
+			type: ${component.hydrationType === true ? true : `'${component.hydrationType}'`},
 			Component: (await import('${scriptPath}')).default
 		})`;
 	}).join(',');
