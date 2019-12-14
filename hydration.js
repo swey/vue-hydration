@@ -1,16 +1,14 @@
 /* global components */
 /*
- * The custom loader in `./gulp/webpack/hydration-loader.js` will take care of adding components to this file.
- * It will create an async import for every component with a `hydration` property in its `default` export.
- * Based on the property's value it will import either the `default` (true) or `Client` ('vanilla') class.
- *
- * IMPORTANT: After adding a new one or changing the hydration setting of an existing component,
- * this file needs to be saved manually in order to trigger a proper rebuild.
+ * The "hydration-loader" custom webpack loader will take care of adding components to this file.
+ * It will create an async import for every component with a `hydration` property.
  */
-const hydratedComponents = [];
+window.__hydratedComponentMap = window.__hydratedComponentMap || {};
+const hydratedComponentMap = window.__hydratedComponentMap;
 let Vue;
 let vueInitializationPromise;
 let globalData = {};
+let uid = 0;
 
 async function initVue() {
 	Vue = (await import('vue/dist/vue.esm.js')).default;
@@ -35,9 +33,14 @@ async function hydrateElement(element) {
 		return;
 	}
 
+	if (!element.id) {
+		element.id = 'hydrated-component-' + ++uid;
+	}
+
 	// Init components
+	let component;
 	if (!(hydrationConfig.type === true || hydrationConfig.type === 'vue')) {
-		hydratedComponents.push(new Component(element));
+		component = new Component(element);
 	} else {
 		vueInitializationPromise = await (vueInitializationPromise || initVue());
 
@@ -49,11 +52,13 @@ async function hydrateElement(element) {
 		// Tell Vue that this is a hydration (Needed for partial hydrations, because Vue SSR renders this attribute only to the outer tag)
 		element.setAttribute('data-server-rendered', 'true');
 
-		hydratedComponents.push(new Component({
+		component = new Component({
 			el: element,
 			propsData,
-		}));
+		});
 	}
+
+	hydratedComponentMap[element.id] = component;
 }
 
 export async function hydrate() {
