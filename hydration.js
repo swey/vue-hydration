@@ -52,10 +52,21 @@ async function hydrateElement(element) {
 		// Tell Vue that this is a hydration (Needed for partial hydrations, because Vue SSR renders this attribute only to the outer tag)
 		element.setAttribute('data-server-rendered', 'true');
 
-		component = new Component({
-			el: element,
-			propsData,
-		});
+		if (typeof Component === 'object') {
+			// Vue object handling
+			component = new Vue({
+				el: element,
+				render: createElement => createElement(Component, {
+					props: propsData
+				}),
+			});
+		} else {
+			// Vue class handling
+			component = new Component({
+				el: element,
+				propsData,
+			});
+		}
 	}
 
 	hydratedComponentMap[element.id] = component;
