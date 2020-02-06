@@ -7,11 +7,17 @@ window.__hydratedComponentMap = window.__hydratedComponentMap || {};
 const hydratedComponentMap = window.__hydratedComponentMap;
 let Vue;
 let vueInitializationPromise;
+let vueCallbackFunction;
 let globalData = {};
 let uid = 0;
 
 async function initVue() {
-	Vue = (await import('vue/dist/vue.esm.js')).default;
+	Vue = (await import('vue/dist/vue.esm')).default;
+
+	if (vueCallbackFunction) {
+		// Call the defined callback function to give the outside access to the Vue instance, e.g. for adding plugins
+		vueCallbackFunction(Vue);
+	}
 }
 
 async function hydrateElement(element) {
@@ -87,8 +93,18 @@ export function setGlobalHydrationData(_globalData) {
 	globalData = _globalData;
 }
 
-export default function initHydration(globalData = {}) {
-	setGlobalHydrationData(globalData);
+export function setVueCallbackFunction(_vueCallbackFunction) {
+	vueCallbackFunction = _vueCallbackFunction;
+}
+
+export default function initHydration(globalData = null, vueCallbackFunction = null) {
+	if (globalData) {
+		setGlobalHydrationData(globalData);
+	}
+	if (vueCallbackFunction) {
+		setVueCallbackFunction(vueCallbackFunction);
+	}
+
 	hydrate();
 	document.addEventListener('DOMContentLoaded', () => hydrate());
 }
