@@ -1,10 +1,8 @@
 /**
  * Please note: This plugin is used for server side rendering only.
  */
-const path = require('path');
-
 module.exports = {
-	install(Vue) {
+	install(Vue, options = { globalKeys: ['global'] }) {
 		Vue.mixin({
 			created() {
 				// If the parent has a full hydration (=vue hydration), don't handle the nested components
@@ -29,10 +27,15 @@ module.exports = {
 						this.$options.propsData = this.$options.propsData || {};
 
 						const {
-							global, _target, _env, _config, ...propsDataWithoutGlobal
+							_target, _env, _config, ...context
 						} = this.$options.propsData;
 
-						this.$vnode.data.attrs['data-context'] = JSON.stringify(propsDataWithoutGlobal);
+						// Remove keys, which are globally available and will be added with the hydration - see "globalData" in hydration.js
+						if (options && options.globalKeys) {
+							options.globalKeys.forEach(key => delete context[key]);
+						}
+
+						this.$vnode.data.attrs['data-context'] = JSON.stringify(context);
 					}
 				}
 			},
