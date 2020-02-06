@@ -12,7 +12,7 @@ let globalData = {};
 let uid = 0;
 
 async function initVue() {
-	Vue = (await import('vue/dist/vue.esm')).default;
+	Vue = (await import('vue')).default;
 
 	if (vueCallbackFunction) {
 		// Call the defined callback function to give the outside access to the Vue instance, e.g. for adding plugins
